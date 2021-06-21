@@ -1,6 +1,6 @@
-jtype: ImageNormalizer
+jtype: FlairTextEncoder
 with:
   {}
 metas:
   py_modules:
-    - normalizer.py
+    - encoder_flair.py
