@@ -95,7 +95,7 @@ class FlairTextEncoder(Executor):
         flat_docs = docs.traverse_flat(traversal_paths)
 
         # filter out documents without images
-        filtered_docs = [doc for doc in flat_docs if doc.blob is not None]
+        filtered_docs = [doc for doc in flat_docs if doc.text is not None]
 
         return _batch_generator(filtered_docs, batch_size)
 
