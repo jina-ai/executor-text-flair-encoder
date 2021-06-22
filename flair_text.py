@@ -4,8 +4,8 @@ __license__ = "Apache-2.0"
 from typing import Union, Tuple, List, Any, Iterable
 
 import numpy as np
-from jina import Executor, requests, DocumentArray
 import torch
+from jina import Executor, requests, DocumentArray
 
 
 def _batch_generator(data: List[Any], batch_size: int):
@@ -15,7 +15,7 @@ def _batch_generator(data: List[Any], batch_size: int):
 
 class FlairTextEncoder(Executor):
     def __init__(self,
-                 embeddings: Union[Tuple[str], List[str]] = ('word:glove', ),
+                 embeddings: Union[Tuple[str], List[str]] = ('word:glove',),
                  pooling_strategy: str = 'mean',
                  on_gpu: bool = False,
                  default_batch_size: int = 32,
@@ -52,14 +52,14 @@ class FlairTextEncoder(Executor):
                     from flair.embeddings import BytePairEmbeddings
                     emb = BytePairEmbeddings(model_id)
             except ValueError:
-                #self.logger.error(f'embedding not found: {e}')
+                # self.logger.error(f'embedding not found: {e}')
                 continue
             if emb is not None:
                 embeddings_list.append(emb)
         if embeddings_list:
             from flair.embeddings import DocumentPoolEmbeddings
             self.model = DocumentPoolEmbeddings(embeddings_list, pooling=self.pooling_strategy)
-            #self.logger.info(f'flair encoder initialized with embeddings: {self.embeddings}')
+            # self.logger.info(f'flair encoder initialized with embeddings: {self.embeddings}')
         else:
             print('flair encoder initialization failed.')
 

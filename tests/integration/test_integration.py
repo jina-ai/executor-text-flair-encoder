@@ -1,8 +1,5 @@
-import os
-
 from jina import Flow, Document
 
-cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 def data_generator(num_docs):
     for i in range(num_docs):
