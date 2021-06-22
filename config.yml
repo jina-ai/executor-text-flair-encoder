@@ -3,4 +3,4 @@ with:
   {}
 metas:
   py_modules:
-    - encoder_flair.py
+    - flair_text.py
