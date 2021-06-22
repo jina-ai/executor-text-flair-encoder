@@ -10,7 +10,7 @@ from jina import Executor, requests, DocumentArray
 
 def _batch_generator(data: List[Any], batch_size: int):
     for i in range(0, len(data), batch_size):
-        yield data[i:min(i + batch_size, len(data))]
+        yield data[i:i + batch_size]
 
 
 class FlairTextEncoder(Executor):
@@ -77,15 +77,12 @@ class FlairTextEncoder(Executor):
 
     def _create_embeddings(self, document_batches_generator: Iterable):
         for document_batch in document_batches_generator:
-            text_batch = [d.text for d in document_batch]
-            text_batch = np.array(text_batch)
-
             from flair.data import Sentence
-            c_batch = [Sentence(row) for row in text_batch]
+            c_batch = [Sentence(d.text) for d in document_batch]
+
             self.model.embed(c_batch)
-            embedding_batch = [self.tensor2array(c_text.embedding) for c_text in c_batch]
-            for document, embedding in zip(document_batch, embedding_batch):
-                document.embedding = embedding
+            for document, c_text in zip(document_batch, c_batch):
+                document.embedding = self.tensor2array(self.tensor2array(c_text.embedding))
 
     def _get_input_data(self, docs: DocumentArray, parameters: dict):
         traversal_paths = parameters.get('traversal_paths', self.default_traversal_paths)
