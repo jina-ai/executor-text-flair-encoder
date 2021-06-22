@@ -4,13 +4,14 @@ from jinahub.encoder.flair_text import FlairTextEncoder
 
 
 @pytest.fixture()
-def test_text():
-    return 'it is a good day! the dog sits on the floor.'
+def docs_generator():
+    return DocumentArray((Document(text='random text') for _ in range(30)))
 
 
-def test_flairtextencoder_encode(test_text):
+def test_flairtextencoder_encode(docs_generator):
     encoder = FlairTextEncoder(pooling_strategy='mean')
-    docs = DocumentArray([Document(text=test_text)])
-    encoder.encode(docs, parameters={})
+    docs = docs_generator
+    encoder.encode(docs, parameters={'batch_size': 10, 'traversal_paths': ['r']})
 
+    assert len(docs.get_attributes('embedding')) == 30
     assert docs[0].embedding.shape == (100,)
