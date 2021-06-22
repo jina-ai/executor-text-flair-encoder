@@ -14,6 +14,28 @@ def _batch_generator(data: List[Any], batch_size: int):
 
 
 class FlairTextEncoder(Executor):
+    """
+    Encode an array of string in size `B` into an ndarray in size `B x D`
+
+    The ndarray potentially is BatchSize x (Channel x Height x Width)
+
+    Internally, :class:`FlairTextEncoder` wraps the DocumentPoolEmbeddings from Flair.
+
+    :param embeddings: the name of the embeddings. Supported models include
+        - ``word:[ID]``: the classic word embedding model, the ``[ID]`` are listed at
+        https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/CLASSIC_WORD_EMBEDDINGS.md
+        - ``flair:[ID]``: the contextual embedding model, the ``[ID]`` are listed at
+        https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/FLAIR_EMBEDDINGS.md
+        - ``pooledflair:[ID]``: the pooled version of the contextual embedding model,
+        the ``[ID]`` are listed at
+        https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/FLAIR_EMBEDDINGS.md
+        - ``byte-pair:[ID]``: the subword-level embedding model, the ``[ID]`` are listed at
+        https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/BYTE_PAIR_EMBEDDINGS.md
+        - ``Example``: ('word:glove', 'flair:news-forward', 'flair:news-backward')
+
+    :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding.
+    Supported strategies include ``mean``, ``min``, ``max``.
+    """
     def __init__(self,
                  embeddings: Union[Tuple[str], List[str]] = ('word:glove',),
                  pooling_strategy: str = 'mean',
@@ -82,7 +104,7 @@ class FlairTextEncoder(Executor):
 
             self.model.embed(c_batch)
             for document, c_text in zip(document_batch, c_batch):
-                document.embedding = self.tensor2array(self.tensor2array(c_text.embedding))
+                document.embedding = self.tensor2array(c_text.embedding)
 
     def _get_input_data(self, docs: DocumentArray, parameters: dict):
         traversal_paths = parameters.get('traversal_paths', self.default_traversal_paths)
