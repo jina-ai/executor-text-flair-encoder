@@ -53,11 +53,11 @@ pods:
 	pip install git+https://github.com/jina-ai//executor-text-flair-encoder.git
 	```
 
-1. Use `ImagePaddlehubEncoder` in your code
+1. Use `FlairTextEncoder` in your code
 
 	```python
 	from jina import Flow
-	from jinahub.encoder.paddle_image import ImagePaddlehubEncoder
+	from jinahub.encoder.flair_text import FlairTextEncoder
 	
 	f = Flow().add(uses=FlairTextEncoder)
 	```
