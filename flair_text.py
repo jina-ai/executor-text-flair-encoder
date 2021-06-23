@@ -32,7 +32,9 @@ class FlairTextEncoder(Executor):
         - ``byte-pair:[ID]``: the subword-level embedding model, the ``[ID]`` are listed at
         https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/BYTE_PAIR_EMBEDDINGS.md
         - ``Example``: ('word:glove', 'flair:news-forward', 'flair:news-backward')
-
+    :param default_batch_size: size of each batch
+    :param default_traversal_paths: traversal path of the Documents, (e.g. 'r', 'c')
+    :param on_gpu: set to True if using GPU
     :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding.
     Supported strategies include ``mean``, ``min``, ``max``.
     """
