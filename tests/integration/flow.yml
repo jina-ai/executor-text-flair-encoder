@@ -2,7 +2,6 @@ jtype: Flow
 version: '1'
 with:
   return_results: true
-  workspace: $WORKSPACE
 executors:
   - name: text_encoder
     uses:
