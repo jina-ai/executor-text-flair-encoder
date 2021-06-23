@@ -18,6 +18,36 @@ def test_flair_batch(docs_generator):
     assert docs[0].embedding.shape == (100,)
 
 
+def test_traversal_path():
+    text = 'blah'
+    docs = DocumentArray([Document(id='root1', text=text)])
+    docs[0].chunks = [Document(id='chunk11', text=text),
+                      Document(id='chunk12', text=text),
+                      Document(id='chunk13', text=text)
+                      ]
+    docs[0].chunks[0].chunks = [
+        Document(id='chunk111', text=text),
+        Document(id='chunk112', text=text),
+    ]
+
+    encoder = FlairTextEncoder()
+    encoder.encode(docs, parameters={'batch_size': 10, 'traversal_paths': ['c']})
+
+    for path, count in [['r', 0], ['c', 3], ['cc', 0]]:
+        assert len(docs.traverse_flat([path]).get_attributes('embedding')) == count
+
+    encoder.encode(docs, parameters={'batch_size': 10, 'traversal_paths': ['cc']})
+    for path, count in [['r', 0], ['c', 3], ['cc', 2]]:
+        assert len(docs.traverse_flat([path]).get_attributes('embedding')) == count
+
+
+def test_no_documents():
+    encoder = FlairTextEncoder()
+    docs = []
+    encoder.encode(docs, parameters={'batch_size': 10, 'traversal_paths': ['r']})
+    assert not docs
+
+
 def test_flair_word_encode():
     docs = []
     words = ['apple', 'banana1', 'banana2', 'studio', 'satelite', 'airplane']
