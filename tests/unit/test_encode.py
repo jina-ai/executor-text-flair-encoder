@@ -33,12 +33,16 @@ def test_traversal_path():
     encoder = FlairTextEncoder()
     encoder.encode(docs, parameters={'batch_size': 10, 'traversal_paths': ['c']})
 
-    for path, count in [['r', 0], ['c', 3], ['cc', 0]]:
-        assert len(docs.traverse_flat([path]).get_attributes('embedding')) == count
+    for path, count in [[['r'], 0], [['c'], 3], [['cc'], 0]]:
+        assert len(docs.traverse_flat(path).get_attributes('embedding')) == count
+        if count > 0:
+            assert docs.traverse_flat(path).get_attributes('embedding')[0].shape == (100,)
 
     encoder.encode(docs, parameters={'batch_size': 10, 'traversal_paths': ['cc']})
-    for path, count in [['r', 0], ['c', 3], ['cc', 2]]:
-        assert len(docs.traverse_flat([path]).get_attributes('embedding')) == count
+    for path, count in [[['r'], 0], [['c'], 3], [['cc'], 2]]:
+        assert len(docs.traverse_flat(path).get_attributes('embedding')) == count
+        if count > 0:
+            assert docs.traverse_flat(path).get_attributes('embedding')[0].shape == (100,)
 
 
 def test_no_documents():
@@ -54,8 +58,8 @@ def test_flair_word_encode():
     for word in words:
         docs.append(Document(text=word))
 
-    clip_text_encoder = FlairTextEncoder()
-    clip_text_encoder.encode(DocumentArray(docs), {})
+    text_encoder = FlairTextEncoder()
+    text_encoder.encode(DocumentArray(docs), {})
 
     txt_to_ndarray = {}
     for d in docs:
