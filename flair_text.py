@@ -43,7 +43,7 @@ class FlairTextEncoder(Executor):
                  pooling_strategy: str = 'mean',
                  on_gpu: bool = False,
                  default_batch_size: int = 32,
-                 default_traversal_paths: Union[str, List[str]] = 'r',
+                 default_traversal_paths: List[str] = ['r'],
                  *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
