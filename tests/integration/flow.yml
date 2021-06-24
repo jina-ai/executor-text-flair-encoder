@@ -2,10 +2,9 @@ jtype: Flow
 version: '1'
 with:
   return_results: true
-  workspace: $WORKSPACE
 executors:
-  - name: normalizer
+  - name: text_encoder
     uses:
-      jtype: ImageNormalizer
+      jtype: FlairTextEncoder
       with:
-        target_size: 64
+        pooling_strategy: 'mean'
