@@ -7,4 +7,4 @@ url: https://jina.ai
 vendor: Jina AI Limited
 version: 0.0.1
 license: apache-2.0
-keywords: [flair, nlp, encoder, torch]
+keywords: [flair, text, encoder, PyTorch]
