@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Union, Tuple, List, Any, Iterable
+from typing import Union, Tuple, List, Any, Iterable, Optional
 
 import numpy as np
 import torch
@@ -88,12 +88,12 @@ class FlairTextEncoder(Executor):
             print('flair encoder initialization failed.')
 
     @requests
-    def encode(self, docs: DocumentArray, parameters: dict, *args, **kwargs) -> 'np.ndarray':
+    def encode(self, docs: Optional[DocumentArray], parameters: dict, *args, **kwargs) -> 'np.ndarray':
         """
-        Encode ``Document`` content from an array of string in size `B` into a ndarray in size `B x D`.
+        Encode text data into a ndarray of `D` as dimension, and fill the embedding of each Document.
 
-        :param content: a 1-dimension array of string type in size `B`
-        :return: an ndarray in size `B x D`
+        :param docs: DocumentArray containing text
+        :param parameters: parameters dictionary
         """
         if docs:
             document_batches_generator = self._get_input_data(docs, parameters)
