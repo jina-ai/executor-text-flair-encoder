@@ -11,7 +11,7 @@ def data_generator(num_docs):
 
 def test_use_in_flow():
     with Flow.load_config('flow.yml') as flow:
-        data = flow.post(on='/encode', inputs=data_generator(5))
+        data = flow.post(on='/encode', inputs=data_generator(5), return_results=True)
         docs = data[0].docs
         for doc in docs:
             assert doc.embedding.shape == (100,)
