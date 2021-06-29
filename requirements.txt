@@ -1,2 +1,2 @@
-jina==2.0.0rc9
+jina==2.0.0rc10
 flair==0.8.0
