@@ -73,7 +73,7 @@ pods:
 	docker build -t executor-text-flair-encoder .
 	```
 
-1. Use `my-dummy-executor-image` in your codes
+1. Use `executor-text-flair-encoder` in your codes
 
 	```python
 	from jina import Flow
@@ -89,7 +89,7 @@ Here is an example usage of the **FlairTextEncoder**.
 from jina import Flow, Document
 f = Flow().add(uses='jinahub+docker://FlairTextEncoder')
 with f:
-    resp = f.post(on='foo', inputs=Document(text='hello Jina'), return_resutls=True)
+    resp = f.post(on='foo', inputs=Document(text='hello Jina'), return_results=True)
 ```
 
 ### Inputs 
