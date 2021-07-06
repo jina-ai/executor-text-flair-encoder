@@ -1,16 +1,12 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Union, Tuple, List, Any, Iterable, Optional
+from typing import Union, Tuple, List, Iterable, Optional
 
 import numpy as np
 import torch
 from jina import Executor, requests, DocumentArray
-
-
-def _batch_generator(data: List[Any], batch_size: int):
-    for i in range(0, len(data), batch_size):
-        yield data[i:i + batch_size]
+from jina_commons.batching import get_docs_batch_generator
 
 
 class FlairTextEncoder(Executor):
@@ -43,7 +39,7 @@ class FlairTextEncoder(Executor):
                  pooling_strategy: str = 'mean',
                  on_gpu: bool = False,
                  default_batch_size: int = 32,
-                 default_traversal_paths: List[str] = ['r'],
+                 default_traversal_paths: Optional[List[str]] = None,
                  *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
@@ -52,7 +48,7 @@ class FlairTextEncoder(Executor):
         self.max_length = -1  # reserved variable for future usages
         self.on_gpu = on_gpu
         self.default_batch_size = default_batch_size
-        self.default_traversal_paths = default_traversal_paths
+        self.default_traversal_paths = default_traversal_paths or ['r']
         self._post_set_device = False
         self.device = torch.device('cuda:0') if self.on_gpu else torch.device('cpu')
 
@@ -88,15 +84,23 @@ class FlairTextEncoder(Executor):
             print('flair encoder initialization failed.')
 
     @requests
-    def encode(self, docs: Optional[DocumentArray], parameters: dict, *args, **kwargs) -> 'np.ndarray':
+    def encode(self, docs: Optional[DocumentArray], parameters: dict, *args, **kwargs):
         """
         Encode text data into a ndarray of `D` as dimension, and fill the embedding of each Document.
 
-        :param docs: DocumentArray containing text
-        :param parameters: parameters dictionary
+        :param docs: documents sent to the encoder. The docs must have text.
+        :param parameters: dictionary to define the `traversal_path` and the `batch_size`.
+            For example,
+            `parameters={'traversal_paths': ['r'], 'batch_size': 10}`
+            will set the parameters for traversal_paths, batch_size and that are actually used
         """
         if docs:
-            document_batches_generator = self._get_input_data(docs, parameters)
+            document_batches_generator = get_docs_batch_generator(
+                docs,
+                traversal_path=parameters.get('traversal_paths', self.default_traversal_paths),
+                batch_size=parameters.get('batch_size', self.default_batch_size),
+                needs_attr='text'
+            )
             self._create_embeddings(document_batches_generator)
 
     def _create_embeddings(self, document_batches_generator: Iterable):
@@ -107,18 +111,6 @@ class FlairTextEncoder(Executor):
             self.model.embed(c_batch)
             for document, c_text in zip(document_batch, c_batch):
                 document.embedding = self.tensor2array(c_text.embedding)
-
-    def _get_input_data(self, docs: DocumentArray, parameters: dict):
-        traversal_paths = parameters.get('traversal_paths', self.default_traversal_paths)
-        batch_size = parameters.get('batch_size', self.default_batch_size)
-
-        # traverse thought all documents which have to be processed
-        flat_docs = docs.traverse_flat(traversal_paths)
-
-        # filter out documents without images
-        filtered_docs = [doc for doc in flat_docs if doc.text is not None]
-
-        return _batch_generator(filtered_docs, batch_size)
 
     def tensor2array(self, tensor):
         if isinstance(tensor, np.ndarray):
