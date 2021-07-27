@@ -1,3 +1,5 @@
+MOVED TO https://github.com/jina-ai/executors/tree/main/jinahub/encoders/text/FlairTextEncoder
+
 # FlairTextEncoder
 
 `FlairTextEncoder` encodes `Document` content from an array of string in size `B` into a ndarray in size `B x D`.
